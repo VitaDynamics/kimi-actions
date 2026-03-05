@@ -86,9 +86,19 @@ class BaseTool(ABC):
 
         return footer
 
-    # Agent SDK configuration
-    AGENT_MODEL = "kimi-k2.5"  # Latest model for best performance
-    AGENT_BASE_URL = "https://api.moonshot.cn/v1"
+    # Agent SDK configuration defaults (overridden by ActionConfig)
+    AGENT_MODEL_DEFAULT = "kimi-k2.5"
+    AGENT_BASE_URL_DEFAULT = "https://api.moonshot.cn/v1"
+
+    @property
+    def AGENT_MODEL(self) -> str:
+        """Get model name from config, falling back to default."""
+        return self.config.model or self.AGENT_MODEL_DEFAULT
+
+    @property
+    def AGENT_BASE_URL(self) -> str:
+        """Get base URL from config, falling back to default."""
+        return self.config.kimi_base_url or self.AGENT_BASE_URL_DEFAULT
 
     def setup_agent_env(self) -> Optional[str]:
         """Setup environment variables for Agent SDK.
@@ -104,7 +114,7 @@ class BaseTool(ABC):
         base_url = (
             self.config.kimi_base_url
             or os.environ.get("KIMI_BASE_URL")
-            or self.AGENT_BASE_URL
+            or self.AGENT_BASE_URL_DEFAULT
         )
 
         os.environ["KIMI_API_KEY"] = api_key
