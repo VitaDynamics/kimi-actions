@@ -123,7 +123,11 @@ class BaseTool(ABC):
         Returns:
             True if clone succeeded, False otherwise
         """
-        clone_url = f"https://github.com/{repo_name}.git"
+        token = getattr(self.github, 'token', None) or os.environ.get('INPUT_GITHUB_TOKEN', '')
+        if token:
+            clone_url = f"https://x-access-token:{token}@github.com/{repo_name}.git"
+        else:
+            clone_url = f"https://github.com/{repo_name}.git"
 
         try:
             if branch:
